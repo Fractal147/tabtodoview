@@ -9,6 +9,10 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 - Further options for selecting indent character
 - Helpful parsing error output in separate file
 
+## [0.2.0] - 2020-08-12
+### Changed
+- Made script non-interactive
+
 ## [0.1.0] - 2020-08-12
 ### Added
 - Created initial version

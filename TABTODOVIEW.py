@@ -1,6 +1,5 @@
 #Todo viewer
 #Andrew Witty
-
 #Runs once, and interactive?
 
 #Desired stuff: present the todo sorted by priority of first tasks, then position in file.
@@ -171,8 +170,8 @@ def tabtodoview(fn_in):
                 workingIndentLevel = parent_dict['tabCount']+1
             
 
-            if not(lineIndentLevel == workingIndentLevel):
-                print("error, could not indent to " + str(lineIndentLevel) +" got to " + str(workingIndentLevel))
+            #if not(lineIndentLevel == workingIndentLevel):
+                #print("error, could not indent to " + str(lineIndentLevel) +" got to " + str(workingIndentLevel))
             ##it'll get stuck in the while loops surely though.
             thisLineDict['parentDict'] = parent_dict;
             parent_dict['subslist'].append( thisLineDict);
@@ -279,11 +278,11 @@ def tabtodoview(fn_in):
     raw_dict = read_in(f_in)
     #print(raw_list)
     
-    input("Read In Fully, enter to continue")
+    #input("Read In Fully, enter to continue")
     
     sorted_dict = recursive_sort(raw_dict) ##also probably sorts raw_dict to tbf
     #masterDict = recursive_sort(raw_list)
-    input("Sorted, enter to continue")
+    #input("Sorted, enter to continue")
     #print (sortedListOfDicts)
     recursive_write(sorted_dict['subslist'])
     
