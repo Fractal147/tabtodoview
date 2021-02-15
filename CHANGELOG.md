@@ -12,6 +12,11 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 - Warn if there's impossible jumping down in indent level (by more than one at a time)
 
 
+## [0.4.0] - 2020-02-05
+### Changed
+- Tided printed text
+- added line numbers to top sections
+
 ## [0.3.0] - 2020-01-05
 ### Added 
 - Add 'Most due' section at top with top 5 trees based on oldest due:yyyy-mm-dd date.

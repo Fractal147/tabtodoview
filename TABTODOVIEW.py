@@ -324,10 +324,11 @@ def tabtodoview(fn_in):
         while listIndex < len(family_list):
             if 'subslist' in family_list[listIndex]:
                 #insert into family_list the whole subslist - slow and faffy, as only .extend works on iterables
-                list_afterwards = family_list[listIndex+1:] ##should be safe if list is 1 long
-                family_list = family_list[:listIndex+1] ##So it's now got only the first part of the list
-                family_list.extend(family_list[listIndex]['subslist'])
-                family_list.extend(list_afterwards)
+                # list_afterwards = family_list[listIndex+1:] ##should be safe if list is 1 long
+                # family_list = family_list[:listIndex+1] ##So it's now got only the first part of the list
+                # family_list.extend(family_list[listIndex]['subslist'])
+                # family_list.extend(list_afterwards) 
+                family_list[listIndex+1:listIndex+1] = family_list[listIndex]['subslist']  ##python slicing is great - all lines above become this
             listIndex +=1
 
         return family_list
@@ -365,11 +366,12 @@ def tabtodoview(fn_in):
 
     #sorted_flat_list = sort_prio_due(flat_lines_dict_list)
     sorted_flat_list = list_children_from_parent(sorted_dict)
-    f_out.write("*** All Flagged "+flag_do+" tasks, one line only, overall project priority order:\n")
+    f_out.write("*** All Flagged "+flag_do+" subtasks and line numbers, in priority>date>file order:\n")
     for d in sorted_flat_list:
         if not ('isdone' in d or 'iswhitespace' in d):
             if flag_do in d['text']:
-                f_out.write("\t")
+                f_out.write(str(d['linenumber']+1).zfill(4))
+                f_out.write(" ")
                 f_out.write(d['text'].lstrip("\t"))
     f_out.write("\n\n")
 
@@ -384,7 +386,7 @@ def tabtodoview(fn_in):
     number_of_oldest_tasks = min(5, len(sorted_flat_list))
     due_sorted_flat = sorted(sorted_flat_list,  key=itemgetter('due') )#, reverse=True)
     ##conveniently, done tasks don't have due date saved here
-    f_out.write("*** Most (over)due " + str(number_of_oldest_tasks) + " tasks with trees:\n")
+    f_out.write("*** Most (over)due " + str(number_of_oldest_tasks) + " tasks with trees and line numbers:\n")
     for d in due_sorted_flat[:number_of_oldest_tasks]:
         #f_out.write("\t"+ d['text'].lstrip('\t') ) ##works fine for one line/task
         ##for d2 in list_elders_from_child(d): ##only lists higher tasks
@@ -393,14 +395,18 @@ def tabtodoview(fn_in):
                 ##f_out.write("\t")
                 #print(d2)
                 if not ('isdone' in d2 or 'iswhitespace' in d2):
-                    f_out.write("\t")
+                    #if d2['tabCount'] == 0: #for the first line only
+                    f_out.write(str(d2['linenumber']+1).zfill(4))
+                    f_out.write(" ")
+                    #else:
+                    #f_out.write("\t")
                     f_out.write(d2['text'])
     f_out.write("\n\n")
        
 
 
     #Write out the rest of the list to f_out
-    f_out.write("*** All open tasks, sorted by priority tag (then date, then file order):\n")
+    f_out.write("*** All open tasks, sorted by priority tag (then due date, then file order):\n")
     recursive_write(sorted_dict['subslist'])
 
 
