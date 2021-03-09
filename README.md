@@ -36,6 +36,16 @@ becomes after sorting
     	(F) Example subtask 1c
     	Example subtask 1a
 
+## Extra tags
+- +do is added to a list on top, for day-to-day task management
+	All +do flagged subtasks are listed as one liners at top of file
+	(in the priority>due_date>file location order)
+- due:yyyy-mm-dd is used as the due date sort for the second section
+	Top 5 oldest dated tasks, their children, their parents are displayed
+	(in due date>priority>file location order)
+- +inperson is the third section, for those WFHers
+	All +inperson flagged subtasks are listed as one liners
+	(in the priority>due_date>file location order)
 
 ## Usage
  - Run tabtodoview with the text file input, and it generates the view file under [inputname]_ttv

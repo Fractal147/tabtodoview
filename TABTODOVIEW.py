@@ -358,6 +358,7 @@ def tabtodoview(fn_in):
     ##but can always follow upwards
 
     ##Place to add extra features to the top of the file
+
     #Seach for '+do' flags....
     ##intelligent would be to display them as indented if they are subtasks, else new line
     ##Hmm, to do that needs (At least)the original dict per line - then can follow the tree up
@@ -403,6 +404,21 @@ def tabtodoview(fn_in):
                     f_out.write(d2['text'])
     f_out.write("\n\n")
        
+    #Seach for '+inperson' flags....
+    ##Display as one line tasks without indents
+    ##to sort those...needs a flat list of all line dicts.
+    flag_ip = "+inperson"
+    #sorted_flat_list = sort_prio_due(flat_lines_dict_list)
+    ##sorted_flat_list = list_children_from_parent(sorted_dict) ##already sorted above
+    f_out.write("*** All Flagged "+flag_ip+" subtasks and line numbers, in priority>date>file order:\n")
+    for d in sorted_flat_list:
+        if not ('isdone' in d or 'iswhitespace' in d):
+            if flag_ip in d['text']:
+                f_out.write(str(d['linenumber']+1).zfill(4))
+                f_out.write(" ")
+                f_out.write(d['text'].lstrip("\t"))
+    f_out.write("\n\n")
+
 
 
     #Write out the rest of the list to f_out
