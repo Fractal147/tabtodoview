@@ -21,9 +21,17 @@ Additionally, some can be added to a separate toplist based on the usual +tags
     	(A) Example subtask 1b
     		(Z) Example subsubtask 1ba
     		(E) Example subsubtask 1bb
-    		Example subsubtask 1bc
+			x (A) done subtask 1bc
+    		Example subsubtask 1bd
     	(F) Example subtask 1c
     (A) Example main task 2
+	n example note
+		subtask of note
+			subsubtask of note
+	x n example note
+		subtask of done note
+	x (B) Done task of some kind 3
+		Not done subtask 3a
 
 becomes after sorting
 
@@ -32,9 +40,10 @@ becomes after sorting
     	(A) Example subtask 1b
     		(E) Example subsubtask 1bb
     		(Z) Example subsubtask 1ba
-    		Example subsubtask 1bc
+    		Example subsubtask 1bd
     	(F) Example subtask 1c
     	Example subtask 1a
+		Not done subtask 3a
 
 ## Extra tags
 - +do is added to a list on top, for day-to-day task management
@@ -46,6 +55,9 @@ becomes after sorting
 - +inperson is the third section, for those WFHers
 	All +inperson flagged subtasks are listed as one liners
 	(in the priority>due_date>file location order)
+- n or 'x n' at start of line counts the task as a note
+- - notes and their subtasks are not written out in the end file.
+- - Usage as a more correct way of adding notes to the todo list.
 
 ## Usage
  - Run tabtodoview with the text file input, and it generates the view file under [inputname]_ttv

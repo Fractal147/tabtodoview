@@ -5,19 +5,23 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 
 
 ## [Unreleased]
-- Add support for a notes tag - x n, or n .
 - Further options for selecting indent character
 - Helpful parsing error output in separate file
 - Possibly add settings section for number of lines in the most due/ +do tag....
 - Warn if there's impossible jumping down in indent level (by more than one at a time)
 
+## [0.5.0] - 2021-03-15
+### Changed
+- Added 'n' start of line character to mark lines (and children) as notes to skip output
+- note child note marking continues also in special case of 'x n'
+- Fixed changelog dates
 
-## [0.4.0] - 2020-02-05
+## [0.4.0] - 2021-02-05
 ### Changed
 - Tided printed text
 - added line numbers to top sections
 
-## [0.3.0] - 2020-01-05
+## [0.3.0] - 2021-01-05
 ### Added 
 - Add 'Most due' section at top with top 5 trees based on oldest due:yyyy-mm-dd date.
 - Add '+do' section at top with lines only in same order with '+do' flag in

@@ -2,7 +2,8 @@
 #Andrew Witty
 #Runs once, and interactive?
 
-#Desired stuff: present the todo sorted by position in file. then due date, then priority of first tasks, 
+#Desired stuff - original brief v0.1: 
+# present the todo sorted by position in file. then due date, then priority of first tasks, 
 #and where subtasks defined by indents are present...
 #display the highest priority topmost,
 #then due date order topmost,
@@ -11,21 +12,8 @@
 #Done stuff - don't display.
 #whitespace lines - don't display
 
-#Changelog for v3:
-#only indent by tabs at start of line - done already!
-#Ignore whitespace lines in indenting? Done, lines 174
-#Add 'Most due' section at top with top ?5? trees based on oldest due:yyyy-mm-dd date.
-#Add '+do' section at top with lines only in same order with '+do' flag in
 
-
-
-
-#Planned features:
-#Possibly add settings section for number of lines in the most due/ +do tag....
-#Warn if there's impossible jumping down in indent level (by more than one at a time)
-#Add support for a notes tag - x n, or n .
-
-#Planned fixes:
+##Changelog now separate file, with planned changes, features, fixes.
 
 
 
@@ -34,7 +22,7 @@ import os
 from operator import itemgetter
 import re
 print("Python Version is:", sys.version)
-print("Script name/version is", sys.argv[0])
+print("Script name is", sys.argv[0])
 print("Arguments given:" , sys.argv[1:])
 
 #in_mem_buffer_file = ""
@@ -83,6 +71,7 @@ def tabtodoview(fn_in):
 ##        isdone = is_ws_x_space(line)
 ##        text = line
 ##          iswhitespace = line.isspace()
+##        isnote
     
     def parse_line(inputLine, linenum):
         outputDict = {'text': inputLine};
@@ -108,6 +97,11 @@ def tabtodoview(fn_in):
         # 'due:' for due then trimming
         #x (A)
         #0123456789
+        
+        #search for note tag at the start of line.
+        if re.search('^n\ |^x\ n\ ', workingLine):
+            ##This line is a note, and it's children are too.
+            outputDict['isnote']=1
         
         if  re.search('^x\ ', workingLine):
             #print(str(linenum) + inputLine + " Is WS")
@@ -177,12 +171,12 @@ def tabtodoview(fn_in):
             #thisLineDict['grandparentDict']
             #flat_lines_dict_list.append(thisLineDict)
 
-            ##ignore indents if whitespace, and use previous indent
+            ##could ignore indents if whitespace, and use previous indent...
             ##This goes wrong if it's a new master task, then whitespace, then tasks
-            #Safer to purge it completely, or assume it's always indented one level.
+            #Safer to purge it completely, or assume it's always indented one more level.
             #this way whitespace or empty new lines can't mess up the order
             if thisLineDict.get('iswhitespace',0) ==1:
-                ##it's whitespace
+                ##it's whitespace, so treat it like an extra indent
                 lineIndentLevel = workingIndentLevel+1
             else:
                 lineIndentLevel = thisLineDict['tabCount']
@@ -207,8 +201,15 @@ def tabtodoview(fn_in):
             #if not(lineIndentLevel == workingIndentLevel):
                 #print("error, could not indent to " + str(lineIndentLevel) +" got to " + str(workingIndentLevel))
             ##it'll get stuck in the while loops surely though.
-            thisLineDict['parentDict'] = parent_dict;
-            parent_dict['subslist'].append( thisLineDict);
+            
+            #recursively propogate note property.
+            if parent_dict.get('isnote', 0)==1:
+                    thisLineDict['isnote']=1
+
+            #store parent relation
+            thisLineDict['parentDict'] = parent_dict
+            #add this line to approprite list.
+            parent_dict['subslist'].append( thisLineDict)
            
             previous_dict = thisLineDict
             listIndex += 1
@@ -300,7 +301,8 @@ def tabtodoview(fn_in):
             # but orphaned, though in the right place
             if not('isdone' in d):
                 if not('iswhitespace' in d):
-                    f_out.write(d['text'])
+                    if not('isnote' in d):
+                        f_out.write(d['text'])
             
             if 'subslist' in d:
                 recursive_write(d['subslist'])
@@ -369,7 +371,7 @@ def tabtodoview(fn_in):
     sorted_flat_list = list_children_from_parent(sorted_dict)
     f_out.write("*** All Flagged "+flag_do+" subtasks and line numbers, in priority>date>file order:\n")
     for d in sorted_flat_list:
-        if not ('isdone' in d or 'iswhitespace' in d):
+        if not ('isdone' in d or 'iswhitespace' in d or 'isdone' in d):
             if flag_do in d['text']:
                 f_out.write(str(d['linenumber']+1).zfill(4))
                 f_out.write(" ")
@@ -395,7 +397,7 @@ def tabtodoview(fn_in):
             for d2 in list_all_family_from_child(d):
                 ##f_out.write("\t")
                 #print(d2)
-                if not ('isdone' in d2 or 'iswhitespace' in d2):
+                if not ('isdone' in d2 or 'iswhitespace' in d2 or 'isdone' in d2):
                     #if d2['tabCount'] == 0: #for the first line only
                     f_out.write(str(d2['linenumber']+1).zfill(4))
                     f_out.write(" ")
@@ -412,7 +414,7 @@ def tabtodoview(fn_in):
     ##sorted_flat_list = list_children_from_parent(sorted_dict) ##already sorted above
     f_out.write("*** All Flagged "+flag_ip+" subtasks and line numbers, in priority>date>file order:\n")
     for d in sorted_flat_list:
-        if not ('isdone' in d or 'iswhitespace' in d):
+        if not ('isdone' in d or 'iswhitespace' in d or 'isdone' in d):
             if flag_ip in d['text']:
                 f_out.write(str(d['linenumber']+1).zfill(4))
                 f_out.write(" ")
