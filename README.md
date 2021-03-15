@@ -15,7 +15,7 @@ Additionally, based on some tags, some shortlists are presented at the top of th
 - A subtask's parent is the lowest listed line with fewer indents
 - Whitespace only lines (tabs and spaces only) are ignored in indents, sorting, and output
 - Subtasks are always be listed below their parent task after any sorting
-- - i.e. reverse hierarchical sort
+- - i.e. hierarchical sort based on indent level
 
 ## Example
 
