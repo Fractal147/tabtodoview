@@ -51,17 +51,13 @@ becomes after sorting
 ## Extra tags
 - +do is added to a list on top, for day-to-day task management
 - - All +do flagged subtasks are listed as one liners at top of file
-- - (in the priority>due_date>file location order)
+- - (in the priority>due_date>file_location order)
 - due:yyyy-mm-dd is used as the due date sort for the second section
 - - Top 5 oldest dated tasks, their children, their parents are displayed
-<<<<<<< HEAD
-- -  (in due date>priority>file location order)
-=======
-- -(in due date>priority>file location order)
->>>>>>> 2bc87f49510ff8c7318326822461ac6916a1fd2e
+- -  (in due_date>priority>file_location order)
 - +inperson is the third section, for those WFHers
 - - All +inperson flagged subtasks are listed as one liners
-- - (in the priority>due_date>file location order)
+- - (in the priority>due_date>file_location order)
 - n or 'x n' at start of line counts the task as a note
 - - notes and their subtasks are not written out in the end file.
 - - Usage as a more correct way of adding notes to the todo list.
