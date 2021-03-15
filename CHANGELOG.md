@@ -9,10 +9,21 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 - Helpful parsing error output in separate file
 - Possibly add settings section for number of lines in the most due/ +do tag....
 - Warn if there's impossible jumping down in indent level (by more than one at a time)
+- - As of 0.6.0 it will indent sensibly where possible, limiting to one at a time
+
+## [0.6.0] - 2021-03-15
+### Fixed
+- Sorting error linked to empty line followed by whitespace lines, from 0.3.0
+- - mainly by preventing empty lines having subtasks
+### Changed
+- Tweaked internal line numbering to start at line 1
+- added debug flags at start of script to print extra info
+- refactored sorting logic in read_in to be clearer
+- used indentlevel instead of tabcount in read_in to be less affected by impossible indents
+
 ## [0.5.1] - 2021-03-15
 ### Fixed
 - Removed sorting behaviour from notes
-
 
 ## [0.5.0] - 2021-03-15
 ### Changed

@@ -25,6 +25,9 @@ print("Python Version is:", sys.version)
 print("Script name is", sys.argv[0])
 print("Arguments given:" , sys.argv[1:])
 
+print_debug_indent_levels = False ##prints at start of line
+print_debug_parent_line_number = False ##prints at start of line. don't use with above.
+
 #in_mem_buffer_file = ""
 #flat_lines_dict_list = []
 
@@ -75,17 +78,17 @@ def tabtodoview(fn_in):
     
     def parse_line(inputLine, linenum):
         outputDict = {'text': inputLine};
-        outputDict['linenumber'] = linenum;
+        outputDict['linenumber'] = linenum+1;
         
         
         outputDict['prio']= "ZZ"
         outputDict['due'] = "ZZZ" ##placeholders
 
         workingLine = inputLine.lstrip('\t')
-        #outputDict['tabCount'] = inputLine.count('\t') ##BUG IT MUST MUST ONLY DO LEFT SIDE
+        #outputDict['tabCount'] = inputLine.count('\t') ##BUGGY IT MUST MUST ONLY DO LEFT SIDE
         outputDict['tabCount'] = len(inputLine) - len(workingLine)
         
-        if inputLine.isspace():
+        if ( inputLine.isspace() or not inputLine ): ## blank lines are falsey
             outputDict['iswhitespace']=1
             return outputDict #and skip the rest.
         
@@ -149,17 +152,19 @@ def tabtodoview(fn_in):
     def read_in(in_file_handle):
         headDict = {}
         headDict['subslist'] = []
-        headDict['tabCount'] = -1 ##so anything in the list has indent of 0
+        headDict['tabCount'] = -1 ##so anything in the list has tabcount of 0
+        headDict['indentlevel'] = -1 ##so anything in the list has indent of 0
         headDict['prio'] = "ZZ"
         headDict['due']= "ZZZ"
         headDict['text'] = "Head"
+        headDict['linenumber'] = -1
 
-        parent_dict = headDict;
+        parent_dict = headDict
+        previous_good_dict = headDict
         #headDict.subslist[0].subslist[0].subslist[0].subslist....
 
-        workingIndentLevel = 0 ##simple 1 for each indent.
-        listIndex = 0
-
+        parentIndentLevel = -1 ##simple 1 for each indent.
+        
         #global flat_lines_dict_list ##for adding to too.
 
         ##ok, this is going to work best with a linked list.
@@ -173,33 +178,35 @@ def tabtodoview(fn_in):
             #thisLineDict['grandparentDict']
             #flat_lines_dict_list.append(thisLineDict)
 
-            ##could ignore indents if whitespace, and use previous indent...
-            ##This goes wrong if it's a new master task, then whitespace, then tasks
-            #Safer to purge it completely, or assume it's always indented one more level.
-            #this way whitespace or empty new lines can't mess up the order
-            if thisLineDict.get('iswhitespace',0) ==1:
-                ##it's whitespace, so treat it like an extra indent
-                lineIndentLevel = workingIndentLevel+1
+            ##should ignore indents if whitespace, and store them as if just other tasks of the same orde
+            ##This could go wrong if it's a new master task, then whitespace, then tasks.
+            ##So care with parents - successive whitespace lines are all treated as subtasks of previous
+            ##and a whitespace line can't become a parent.
+
+            if (thisLineDict.get('iswhitespace', 0) ==1):
+                ##it's whitespace, so treat it as indented
+                lineIndentLevel = parentIndentLevel+1
             else:
                 lineIndentLevel = thisLineDict['tabCount']
             
-
-
-            if lineIndentLevel > workingIndentLevel:
+            ##for going deeper, it must be a subtask of the previous line 
+            if lineIndentLevel > (parentIndentLevel+1):
                 ##need to go deeper, make subslist in previous dict
-                previous_dict['subslist'] = []
-                parent_dict = previous_dict
-                listIndex =0
-                workingIndentLevel = parent_dict['tabCount']+1
+                previous_good_dict['subslist'] = []
+                parent_dict = previous_good_dict ##previous_good_dict is last non-whitespace dict.
+                #never trust tabcount since it may jump by >1 deep.
+                parentIndentLevel = parent_dict['indentlevel']
+                lineIndentLevel = parentIndentLevel+1
                 
+            ##this bit was misorting lines prior to 0.6.0, particularly when whitespace involved.
 
-            while lineIndentLevel < workingIndentLevel:
+            #now never entered by whitespace lines!
+            ##for going shallower, repeat until it has a parent less indented than it
+            while lineIndentLevel <= parentIndentLevel: 
                 ##need to go shallower, 
-                parent_dict  = parent_dict['parentDict']
-                listIndex = len(parent_dict['subslist']) ##so now listIndex is poised in next free space.
-                workingIndentLevel = parent_dict['tabCount']+1
+                parent_dict  = parent_dict['parentDict'] ##parent now grandfather
+                parentIndentLevel = parent_dict['indentlevel']
             
-
             #if not(lineIndentLevel == workingIndentLevel):
                 #print("error, could not indent to " + str(lineIndentLevel) +" got to " + str(workingIndentLevel))
             ##it'll get stuck in the while loops surely though.
@@ -207,14 +214,17 @@ def tabtodoview(fn_in):
             #recursively propogate note property.
             if parent_dict.get('isnote', 0)==1:
                     thisLineDict['isnote']=1
-
+            #store indent level
+            thisLineDict['indentlevel'] = lineIndentLevel
             #store parent relation
             thisLineDict['parentDict'] = parent_dict
             #add this line to approprite list.
             parent_dict['subslist'].append( thisLineDict)
-           
-            previous_dict = thisLineDict
-            listIndex += 1
+            
+            #only if not whitespace can it be stored
+            if (thisLineDict.get('iswhitespace', 0) ==0):
+                previous_good_dict = thisLineDict
+            
             
 
             
@@ -304,8 +314,13 @@ def tabtodoview(fn_in):
             if not('isdone' in d):
                 if not('iswhitespace' in d):
                     if not('isnote' in d):
-                        f_out.write(d['text'])
-            
+                        if (print_debug_indent_levels):
+                            f_out.write(str(d['indentlevel'])+d['text'])
+                        if (print_debug_parent_line_number ):
+                            f_out.write(str(d['parentDict']['linenumber'])+d['text'])
+                        else:
+                            f_out.write(d['text'])
+                                    
             if 'subslist' in d:
                 recursive_write(d['subslist'])
         return
@@ -371,11 +386,11 @@ def tabtodoview(fn_in):
 
     #sorted_flat_list = sort_prio_due(flat_lines_dict_list)
     sorted_flat_list = list_children_from_parent(sorted_dict)
-    f_out.write("*** All Flagged "+flag_do+" subtasks and line numbers, in priority>date>file order:\n")
+    f_out.write("*** All Flagged "+flag_do+" subtask oneliners and line numbers, in priority>date>file order:\n")
     for d in sorted_flat_list:
         if not ('isdone' in d or 'iswhitespace' in d or 'isdone' in d):
             if flag_do in d['text']:
-                f_out.write(str(d['linenumber']+1).zfill(4))
+                f_out.write(str(d['linenumber']).zfill(4))
                 f_out.write(" ")
                 f_out.write(d['text'].lstrip("\t"))
     f_out.write("\n\n")
@@ -384,14 +399,13 @@ def tabtodoview(fn_in):
     #Seach for top 5 outdated tasks....
     ##looking for a sorted list, based on due date primarily (then priority, then file order), ignoring indents, ingoring whitespace
     ##would be nice perhaps to be able to keep indents for display
-    ##simple one line per task (lowest level)
-    # for d in due_sorted_flat[:number_of_oldest_tasks]:
-    #    f_out.write("\t"+ d['text'].lstrip('\t') )
+
+    #present with parents up to head, and children.
 
     number_of_oldest_tasks = min(5, len(sorted_flat_list))
     due_sorted_flat = sorted(sorted_flat_list,  key=itemgetter('due') )#, reverse=True)
     ##conveniently, done tasks don't have due date saved here
-    f_out.write("*** Most (over)due " + str(number_of_oldest_tasks) + " tasks with trees and line numbers:\n")
+    f_out.write("*** Most (over)due " + str(number_of_oldest_tasks) + " tasks with parent tasks, subtask tree, and line numbers:\n")
     for d in due_sorted_flat[:number_of_oldest_tasks]:
         #f_out.write("\t"+ d['text'].lstrip('\t') ) ##works fine for one line/task
         ##for d2 in list_elders_from_child(d): ##only lists higher tasks
@@ -401,7 +415,7 @@ def tabtodoview(fn_in):
                 #print(d2)
                 if not ('isdone' in d2 or 'iswhitespace' in d2 or 'isdone' in d2):
                     #if d2['tabCount'] == 0: #for the first line only
-                    f_out.write(str(d2['linenumber']+1).zfill(4))
+                    f_out.write(str(d2['linenumber']).zfill(4))
                     f_out.write(" ")
                     #else:
                     #f_out.write("\t")
@@ -414,11 +428,11 @@ def tabtodoview(fn_in):
     flag_ip = "+inperson"
     #sorted_flat_list = sort_prio_due(flat_lines_dict_list)
     ##sorted_flat_list = list_children_from_parent(sorted_dict) ##already sorted above
-    f_out.write("*** All Flagged "+flag_ip+" subtasks and line numbers, in priority>date>file order:\n")
+    f_out.write("*** All Flagged "+flag_ip+" subtask onliners and line numbers, in priority>date>file order:\n")
     for d in sorted_flat_list:
         if not ('isdone' in d or 'iswhitespace' in d or 'isdone' in d):
             if flag_ip in d['text']:
-                f_out.write(str(d['linenumber']+1).zfill(4))
+                f_out.write(str(d['linenumber']).zfill(4))
                 f_out.write(" ")
                 f_out.write(d['text'].lstrip("\t"))
     f_out.write("\n\n")
@@ -445,7 +459,7 @@ if len(sys.argv) <= 1:
     ###exit()
     print("No file to view given, defaulting to TODOLIST1")
     #infilename = input("What file (default TODOLIST1)") or "TODOLIST1"
-    infilename="TODOLIST1"
+    infilename="..\TODOLIST1"
     working_filename =  os.path.join( os.path.split(sys.argv[0])[0], infilename)
 else:
     working_filename = sys.argv[1]
