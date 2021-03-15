@@ -54,7 +54,11 @@ becomes after sorting
 - - (in the priority>due_date>file location order)
 - due:yyyy-mm-dd is used as the due date sort for the second section
 - - Top 5 oldest dated tasks, their children, their parents are displayed
+<<<<<<< HEAD
 - -  (in due date>priority>file location order)
+=======
+- -(in due date>priority>file location order)
+>>>>>>> 2bc87f49510ff8c7318326822461ac6916a1fd2e
 - +inperson is the third section, for those WFHers
 - - All +inperson flagged subtasks are listed as one liners
 - - (in the priority>due_date>file location order)
