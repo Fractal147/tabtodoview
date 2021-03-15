@@ -108,7 +108,9 @@ def tabtodoview(fn_in):
             outputDict['isdone'] =1
             ##flag priority of task as lowest of the low...skipped for v3
             #outputDict['prio'] = "ZZZ"
-        else: ## done items can't have a high priority or due
+
+        if not ('isdone' in outputDict or 'isnote' in outputDict):
+        ## done or note items can't have a high priority or due
             if  re.search('\(\w\)', workingLine):
                 prioLetter = workingLine[workingLine.find("(")+1]
                 outputDict['prio'] = prioLetter;

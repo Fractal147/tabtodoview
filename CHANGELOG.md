@@ -9,6 +9,10 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 - Helpful parsing error output in separate file
 - Possibly add settings section for number of lines in the most due/ +do tag....
 - Warn if there's impossible jumping down in indent level (by more than one at a time)
+## [0.5.1] - 2021-03-15
+### Fixed
+- Removed sorting behaviour from notes
+
 
 ## [0.5.0] - 2021-03-15
 ### Changed
