@@ -409,7 +409,7 @@ def tabtodoview(fn_in):
     for d in due_sorted_flat[:number_of_oldest_tasks]:
         #f_out.write("\t"+ d['text'].lstrip('\t') ) ##works fine for one line/task
         ##for d2 in list_elders_from_child(d): ##only lists higher tasks
-        if not d['due'] == "ZZZ": ##default for anything without due:date
+        if not (d.get('due',"ZZZ") == "ZZZ"): ##default for anything without due:date
             for d2 in list_all_family_from_child(d):
                 ##f_out.write("\t")
                 #print(d2)
@@ -420,7 +420,8 @@ def tabtodoview(fn_in):
                     #else:
                     #f_out.write("\t")
                     f_out.write(d2['text'])
-    f_out.write("\n\n")
+        f_out.write("\n")
+    f_out.write("\n")
        
     #Seach for '+inperson' flags....
     ##Display as one line tasks without indents
