@@ -11,6 +11,11 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 - Warn if there's impossible jumping down in indent level (by more than one at a time)
 - - As of 0.6.0 it will indent sensibly where possible, limiting to one at a time
 
+## [0.6.2] - 2021-03-26
+### Fixed
+- lines within a note block are now ignored correctly.
+- - for +do and for due:yyyy-mm-dd tags
+
 ## [0.6.1] - 2021-03-23
 ### Changed
 - Added blank lines to output of date sorted tasks for easier viewing

@@ -385,10 +385,14 @@ def tabtodoview(fn_in):
     flag_do = "+do"
 
     #sorted_flat_list = sort_prio_due(flat_lines_dict_list)
-    sorted_flat_list = list_children_from_parent(sorted_dict)
+    sorted_flat_list = list_children_from_parent(sorted_dict) ##still contains notes, whitespace, and done stuff.
+
+    sorted_flat_list = [i for i in sorted_flat_list if not(i.get('isnote',0) == 1)] ##removes all notes since they still can have tags, priorities, and due dates (which should be ignored)
+    
+
     f_out.write("*** All Flagged "+flag_do+" subtask oneliners and line numbers, in priority>date>file order:\n")
     for d in sorted_flat_list:
-        if not ('isdone' in d or 'iswhitespace' in d or 'isdone' in d):
+        if not ('isdone' in d or 'iswhitespace' in d or 'isnote' in d):
             if flag_do in d['text']:
                 f_out.write(str(d['linenumber']).zfill(4))
                 f_out.write(" ")
@@ -401,7 +405,7 @@ def tabtodoview(fn_in):
     ##would be nice perhaps to be able to keep indents for display
 
     #present with parents up to head, and children.
-
+    
     number_of_oldest_tasks = min(5, len(sorted_flat_list))
     due_sorted_flat = sorted(sorted_flat_list,  key=itemgetter('due') )#, reverse=True)
     ##conveniently, done tasks don't have due date saved here
@@ -413,7 +417,7 @@ def tabtodoview(fn_in):
             for d2 in list_all_family_from_child(d):
                 ##f_out.write("\t")
                 #print(d2)
-                if not ('isdone' in d2 or 'iswhitespace' in d2 or 'isdone' in d2):
+                if not ('isdone' in d2 or 'iswhitespace' in d2 or 'isnote' in d2):
                     #if d2['tabCount'] == 0: #for the first line only
                     f_out.write(str(d2['linenumber']).zfill(4))
                     f_out.write(" ")
@@ -431,7 +435,7 @@ def tabtodoview(fn_in):
     ##sorted_flat_list = list_children_from_parent(sorted_dict) ##already sorted above
     f_out.write("*** All Flagged "+flag_ip+" subtask onliners and line numbers, in priority>date>file order:\n")
     for d in sorted_flat_list:
-        if not ('isdone' in d or 'iswhitespace' in d or 'isdone' in d):
+        if not ('isdone' in d or 'iswhitespace' in d or 'isnote' in d):
             if flag_ip in d['text']:
                 f_out.write(str(d['linenumber']).zfill(4))
                 f_out.write(" ")
