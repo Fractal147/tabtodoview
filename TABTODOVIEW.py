@@ -21,12 +21,21 @@ import sys
 import os
 from operator import itemgetter
 import re
+import math ##used for file number counting
 print("Python Version is:", sys.version)
 print("Script name is", sys.argv[0])
 print("Arguments given:" , sys.argv[1:])
 
+###CONFIGURATION###
+print_line_numbers_always = True ## Prints line numbers at start of 'main' section
+
+###DEBUG FLAGS###
 print_debug_indent_levels = False ##prints at start of line
 print_debug_parent_line_number = False ##prints at start of line. don't use with above.
+
+
+
+
 
 #in_mem_buffer_file = ""
 #flat_lines_dict_list = []
@@ -173,6 +182,7 @@ def tabtodoview(fn_in):
         #so each and every dict? I guess knows the parent dict.
         
         for cnt, line in enumerate(f_in):
+
             #print(str(cnt) + " : " + line)        
             thisLineDict = parse_line(line,cnt);
             #thisLineDict['grandparentDict']
@@ -305,8 +315,9 @@ def tabtodoview(fn_in):
         return a_dict
     
 
-    def recursive_write(a_list_of_dicts, print_line_numbers = False):
+    def recursive_write(a_list_of_dicts, line_num_digits = 0):
         #for every dict that has the subslist
+        ##line_num_digits - number of digits to pad line numbers to. If 0, then don't print them.
         for d in a_list_of_dicts:
             ##At present it will write all lines that are not done
             # If a task above is complete, but subtasks not, they'll still be written
@@ -319,13 +330,13 @@ def tabtodoview(fn_in):
                         if (print_debug_parent_line_number ):
                             f_out.write(str(d['parentDict']['linenumber'])+d['text'])
                         else:
-                            if (print_line_numbers):
-                                f_out.write(str(d['linenumber']).zfill(4))
+                            if (line_num_digits):
+                                f_out.write(str(d['linenumber']).zfill(line_num_digits))
                                 f_out.write(" ")
                             f_out.write(d['text'])
                                     
             if 'subslist' in d:
-                recursive_write(d['subslist'], print_line_numbers)
+                recursive_write(d['subslist'], line_num_digits)
         return
 
 
@@ -364,7 +375,7 @@ def tabtodoview(fn_in):
 
     raw_dict = read_in(f_in)
     #print(raw_list)
-    
+
     #input("Read In Fully, enter to continue")
     
     sorted_dict = recursive_sort(raw_dict) ##also probably sorts raw_dict to tbf
@@ -389,6 +400,16 @@ def tabtodoview(fn_in):
 
     #sorted_flat_list = sort_prio_due(flat_lines_dict_list)
     sorted_flat_list = list_children_from_parent(sorted_dict) ##still contains notes, whitespace, and done stuff.
+
+
+    if(print_line_numbers_always):
+        max_line_number = len(sorted_flat_list)
+        num_digits_for_line_num = math.log(max_line_number,10)
+        num_digits_for_line_num = math.ceil(num_digits_for_line_num)
+    else:
+        num_digits_for_line_num = 0
+ 
+
 
     sorted_flat_list = [i for i in sorted_flat_list if not(i.get('isnote',0) == 1)] ##removes all notes since they still can have tags, priorities, and due dates (which should be ignored)
     
@@ -449,7 +470,7 @@ def tabtodoview(fn_in):
 
     #Write out the rest of the list to f_out
     f_out.write("*** All open tasks, sorted by priority tag (then due date, then file order):\n")
-    recursive_write(sorted_dict['subslist'],True)
+    recursive_write(sorted_dict['subslist'], num_digits_for_line_num)
 
 
     
