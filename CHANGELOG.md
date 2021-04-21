@@ -11,6 +11,13 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 - Warn if there's impossible jumping down in indent level (by more than one at a time)
 - - As of 0.6.0 it will indent sensibly where possible, limiting to one at a time
 
+## [0.7.0] - 2021-04-21
+### Changed
+- Put line numbers on all lines of output
+- - Enables looking up line number in original file easily
+- - Defaults to 4 digits, though if input file >9999 lines it will use 5 digits etc.
+
+
 ## [0.6.2] - 2021-03-26
 ### Fixed
 - lines within a note block are now ignored correctly.

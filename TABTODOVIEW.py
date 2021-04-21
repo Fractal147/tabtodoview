@@ -305,7 +305,7 @@ def tabtodoview(fn_in):
         return a_dict
     
 
-    def recursive_write(a_list_of_dicts):
+    def recursive_write(a_list_of_dicts, print_line_numbers = False):
         #for every dict that has the subslist
         for d in a_list_of_dicts:
             ##At present it will write all lines that are not done
@@ -319,10 +319,13 @@ def tabtodoview(fn_in):
                         if (print_debug_parent_line_number ):
                             f_out.write(str(d['parentDict']['linenumber'])+d['text'])
                         else:
+                            if (print_line_numbers):
+                                f_out.write(str(d['linenumber']).zfill(4))
+                                f_out.write(" ")
                             f_out.write(d['text'])
                                     
             if 'subslist' in d:
-                recursive_write(d['subslist'])
+                recursive_write(d['subslist'], print_line_numbers)
         return
 
 
@@ -446,7 +449,7 @@ def tabtodoview(fn_in):
 
     #Write out the rest of the list to f_out
     f_out.write("*** All open tasks, sorted by priority tag (then due date, then file order):\n")
-    recursive_write(sorted_dict['subslist'])
+    recursive_write(sorted_dict['subslist'],True)
 
 
     
