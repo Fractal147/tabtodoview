@@ -16,6 +16,9 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 - Put line numbers on all lines of output
 - - Enables looking up line number in original file easily
 - - Defaults to 4 digits, though if input file >9999 lines it will use 5 digits etc.
+### Added
+- Flags at top of script to modify when line numbers are printed
+- - Only for main and overdue sections
 
 
 ## [0.6.2] - 2021-03-26

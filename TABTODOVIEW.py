@@ -27,7 +27,8 @@ print("Script name is", sys.argv[0])
 print("Arguments given:" , sys.argv[1:])
 
 ###CONFIGURATION###
-print_line_numbers_always = True ## Prints line numbers at start of 'main' section
+print_line_numbers_main_list = True ## Prints line numbers at start of 'main' section
+print_line_numbers_overdue_list = True ## Prints line numbers at start of 'most overdue' section
 
 ###DEBUG FLAGS###
 print_debug_indent_levels = False ##prints at start of line
@@ -402,13 +403,10 @@ def tabtodoview(fn_in):
     sorted_flat_list = list_children_from_parent(sorted_dict) ##still contains notes, whitespace, and done stuff.
 
 
-    if(print_line_numbers_always):
-        max_line_number = len(sorted_flat_list)
-        num_digits_for_line_num = math.log(max_line_number,10)
-        num_digits_for_line_num = math.ceil(num_digits_for_line_num)
-    else:
-        num_digits_for_line_num = 0
- 
+    max_line_number = len(sorted_flat_list)
+    num_digits_for_line_num = math.log(max_line_number,10)
+    num_digits_for_line_num = math.ceil(num_digits_for_line_num)
+
 
 
     sorted_flat_list = [i for i in sorted_flat_list if not(i.get('isnote',0) == 1)] ##removes all notes since they still can have tags, priorities, and due dates (which should be ignored)
@@ -418,7 +416,7 @@ def tabtodoview(fn_in):
     for d in sorted_flat_list:
         if not ('isdone' in d or 'iswhitespace' in d or 'isnote' in d):
             if flag_do in d['text']:
-                f_out.write(str(d['linenumber']).zfill(4))
+                f_out.write(str(d['linenumber']).zfill(num_digits_for_line_num))
                 f_out.write(" ")
                 f_out.write(d['text'].lstrip("\t"))
     f_out.write("\n\n")
@@ -443,8 +441,9 @@ def tabtodoview(fn_in):
                 #print(d2)
                 if not ('isdone' in d2 or 'iswhitespace' in d2 or 'isnote' in d2):
                     #if d2['tabCount'] == 0: #for the first line only
-                    f_out.write(str(d2['linenumber']).zfill(4))
-                    f_out.write(" ")
+                    if(print_line_numbers_overdue_list):
+                        f_out.write(str(d2['linenumber']).zfill(num_digits_for_line_num))
+                        f_out.write(" ")
                     #else:
                     #f_out.write("\t")
                     f_out.write(d2['text'])
@@ -461,7 +460,7 @@ def tabtodoview(fn_in):
     for d in sorted_flat_list:
         if not ('isdone' in d or 'iswhitespace' in d or 'isnote' in d):
             if flag_ip in d['text']:
-                f_out.write(str(d['linenumber']).zfill(4))
+                f_out.write(str(d['linenumber']).zfill(num_digits_for_line_num))
                 f_out.write(" ")
                 f_out.write(d['text'].lstrip("\t"))
     f_out.write("\n\n")
@@ -470,7 +469,11 @@ def tabtodoview(fn_in):
 
     #Write out the rest of the list to f_out
     f_out.write("*** All open tasks, sorted by priority tag (then due date, then file order):\n")
-    recursive_write(sorted_dict['subslist'], num_digits_for_line_num)
+    if(print_line_numbers_main_list):
+        main_list_num_digits = num_digits_for_line_num
+    else:
+        main_list_num_digits = 0
+    recursive_write(sorted_dict['subslist'], main_list_num_digits)
 
 
     
