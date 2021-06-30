@@ -33,26 +33,22 @@ print_line_numbers_overdue_list = True ## Prints line numbers at start of 'most 
 
 
 ###Output listing configuration###
-flagged_list_1_flag_text = "+do"
-
-flagged_list_2_flag_text = "+inperson"
-
 due_recently_list_days_backwards = 1
 due_recently_list_days_forwards = 1
 
-over_due_top_n = 5
+
 
 ##Comment out a line to disable that listing
 ##Reorder to ... reorder.
 
 
 def print_output_lists():
-    print_flagged_list_1()
+    print_flagged_list("+do") ##the parameter is the flag string
 #   print_due_recently_list()
-#    print_over_due_top_n_list()
+    print_over_due_top_n_list(5) ##the parameter is the number of results
     ###example_disabled_list()
-#    print_flagged_list_2()
-#    print_all_open_tasks_list()
+    print_flagged_list("+inperson") ##the text is the flag
+    print_all_open_tasks_list()
     end_of_list_footer()
     return
 
@@ -403,118 +399,103 @@ def tabtodoview(fn_in):
 
 
 
-    ######Read in the file into a dictionary:
+    ######Read in the file into a dictionary:################
     raw_dict = read_in(f_in)
     #input("Read In Fully, enter to continue")
     
+    ###Sort it nicely in priority>due_date>file_order
     sorted_dict = recursive_sort(raw_dict)  ##May also actually sort the raw_dict, unsure.
     #input("Sorted, enter to continue")
-      
     
-
-    ##Make a flat version of the text list, so no 'subslist'
-    #list_children_from_parent(sorted_dict) should do it!
+    ##Make a flat version of the text list, so no 'subslist's
     #Which can't be easily depth traversed (printed) since it links to itself
-    ##but can always follow upwards
+    ##but can always follow upwards easily
+    ##still contains notes, whitespace, and done stuff.
+    sorted_flat_list = list_children_from_parent(sorted_dict) 
+    
+    ##remove all notes since they still can have tags, priorities, and due dates which need ignoring
+    sorted_flat_list_nonotes = [
+        i for i in sorted_flat_list if not(i.get('isnote',0) == 1)
+        ] 
 
-    ##Place to add extra features to the top of the file
-
-    #Seach for '+do' flags....
-    ##intelligent would be to display them as indented if they are subtasks, else new line
-    ##Hmm, to do that needs (At least)the original dict per line - then can follow the tree up
-    ##to sort those...needs a flat list of all line dicts.
-    flag_do = "+do"
-
-    #sorted_flat_list = sort_prio_due(flat_lines_dict_list)
-    sorted_flat_list = list_children_from_parent(sorted_dict) ##still contains notes, whitespace, and done stuff.
-
-
+    ##Process line numbering formats
     max_line_number = len(sorted_flat_list)
     num_digits_for_line_num = math.log(max_line_number,10)
     num_digits_for_line_num = math.ceil(num_digits_for_line_num)
 
 
 
-    sorted_flat_list = [i for i in sorted_flat_list if not(i.get('isnote',0) == 1)] ##removes all notes since they still can have tags, priorities, and due dates (which should be ignored)
-    
-
-    f_out.write("*** All Flagged "+flag_do+" subtask oneliners and line numbers, in priority>date>file order:\n")
-    for d in sorted_flat_list:
-        if not ('isdone' in d or 'iswhitespace' in d or 'isnote' in d):
-            if flag_do in d['text']:
-                f_out.write(str(d['linenumber']).zfill(num_digits_for_line_num))
-                f_out.write(" ")
-                f_out.write(d['text'].lstrip("\t"))
-    f_out.write("\n\n")
-
-
-    #Seach for top 5 outdated tasks....
-    ##looking for a sorted list, based on due date primarily (then priority, then file order), ignoring indents, ingoring whitespace
-    ##would be nice perhaps to be able to keep indents for display
-
-    #present with parents up to head, and children.
-    
-    number_of_oldest_tasks = min(5, len(sorted_flat_list))
-    due_sorted_flat = sorted(sorted_flat_list,  key=itemgetter('due') )#, reverse=True)
-    ##conveniently, done tasks don't have due date saved here
-    f_out.write("*** Most (over)due " + str(number_of_oldest_tasks) + " tasks with parent tasks, subtask tree, and line numbers:\n")
-    for d in due_sorted_flat[:number_of_oldest_tasks]:
-        #f_out.write("\t"+ d['text'].lstrip('\t') ) ##works fine for one line/task
-        ##for d2 in list_elders_from_child(d): ##only lists higher tasks
-        if not (d.get('due',"ZZZ") == "ZZZ"): ##default for anything without due:date
-            for d2 in list_all_family_from_child(d):
-                ##f_out.write("\t")
-                #print(d2)
-                if not ('isdone' in d2 or 'iswhitespace' in d2 or 'isnote' in d2):
-                    #if d2['tabCount'] == 0: #for the first line only
-                    if(print_line_numbers_overdue_list):
-                        f_out.write(str(d2['linenumber']).zfill(num_digits_for_line_num))
-                        f_out.write(" ")
-                    #else:
-                    #f_out.write("\t")
-                    f_out.write(d2['text'])
-        f_out.write("\n")
-    f_out.write("\n")
-       
-    #Seach for '+inperson' flags....
-    ##Display as one line tasks without indents
-    ##to sort those...needs a flat list of all line dicts.
-    flag_ip = "+inperson"
-    #sorted_flat_list = sort_prio_due(flat_lines_dict_list)
-    ##sorted_flat_list = list_children_from_parent(sorted_dict) ##already sorted above
-    f_out.write("*** All Flagged "+flag_ip+" subtask onliners and line numbers, in priority>date>file order:\n")
-    for d in sorted_flat_list:
-        if not ('isdone' in d or 'iswhitespace' in d or 'isnote' in d):
-            if flag_ip in d['text']:
-                f_out.write(str(d['linenumber']).zfill(num_digits_for_line_num))
-                f_out.write(" ")
-                f_out.write(d['text'].lstrip("\t"))
-    f_out.write("\n\n")
-
 
 
     #Write out the rest of the list to f_out
-    f_out.write("*** All open tasks, sorted by priority tag (then due date, then file order):\n")
-    if(print_line_numbers_main_list):
-        main_list_num_digits = num_digits_for_line_num
-    else:
-        main_list_num_digits = 0
-    recursive_write(sorted_dict['subslist'], main_list_num_digits)
+    
 
 
-    #global print_flagged_list_1
-     def print_flagged_list_1():
-        sorted_flat_list_nonotes = [i for i in sorted_flat_list if not(i.get('isnote',0) == 1)] ##removes all notes since they still can have tags, priorities, and due dates (which should be ignored)
+    global print_flagged_list
+    def print_flagged_list(flag_text):
+        #e.g Seach for and display all +do flagged lines in a sorted flat list of all tasks
 
-        f_out.write("*** All Flagged "+flag_do+" subtask oneliners and line numbers, in priority>date>file order:\n")
+        #TODO: #intelligent would be to display them as indented if they are subtasks, else new line
+        ##Hmm, to do that needs (At least)the original dict per line - then can follow the tree up
+        
+        f_out.write("*** All Flagged "+flag_text +" subtask oneliners and line numbers, in priority>due_date>file_order:\n")
         for d in sorted_flat_list_nonotes:
             if not ('isdone' in d or 'iswhitespace' in d or 'isnote' in d):
-                if flag_do in d['text']:
+                if flag_text  in d['text']:
                     f_out.write(str(d['linenumber']).zfill(num_digits_for_line_num))
                     f_out.write(" ")
                     f_out.write(d['text'].lstrip("\t"))
         f_out.write("\n\n")
         return
+
+
+    global print_over_due_top_n_list
+    def print_over_due_top_n_list(number_of_oldest_tasks):
+        #Seach for top e.g. 5 outdated tasks....
+        ##looking for a sorted list, based on due date primarily (then priority, then file order), ignoring indents, ingoring whitespace
+        ##would be nice perhaps to be able to keep indents for display
+
+        #present with parents up to head, and children.
+        
+        number_of_oldest_tasks = min(5, len(sorted_flat_list_nonotes))
+        due_sorted_flat = sorted(sorted_flat_list_nonotes,  key=itemgetter('due') )#, reverse=True)
+        ##conveniently, done tasks don't have due date saved here
+        f_out.write("*** Most (over)due " + str(number_of_oldest_tasks) + " tasks with parent tasks, subtask tree, and line numbers:\n")
+        for d in due_sorted_flat[:number_of_oldest_tasks]:
+            #f_out.write("\t"+ d['text'].lstrip('\t') ) ##works fine for one line/task
+            ##for d2 in list_elders_from_child(d): ##only lists higher tasks
+            if not (d.get('due',"ZZZ") == "ZZZ"): ##default for anything without due:date
+                for d2 in list_all_family_from_child(d):
+                    ##f_out.write("\t")
+                    #print(d2)
+                    if not ('isdone' in d2 or 'iswhitespace' in d2 or 'isnote' in d2):
+                        #if d2['tabCount'] == 0: #for the first line only
+                        if(print_line_numbers_overdue_list):
+                            f_out.write(str(d2['linenumber']).zfill(num_digits_for_line_num))
+                            f_out.write(" ")
+                        #else:
+                        #f_out.write("\t")
+                        f_out.write(d2['text'])
+            f_out.write("\n")
+        f_out.write("\n")
+        return
+
+    global print_all_open_tasks_list
+    def print_all_open_tasks_list():
+
+        f_out.write("*** All open tasks ")
+        if(print_line_numbers_main_list):
+            f_out.write("and line numbers ")
+        f_out.write("in priority>due_date>file_order:\n")
+        if(print_line_numbers_main_list):
+            main_list_num_digits = num_digits_for_line_num
+        else:
+            main_list_num_digits = 0
+        recursive_write(sorted_dict['subslist'], main_list_num_digits)
+        f_out.write("\n")
+        return
+
+
 
 
     global end_of_list_footer
