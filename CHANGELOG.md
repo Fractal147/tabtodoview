@@ -11,6 +11,19 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 - Warn if there's impossible jumping down in indent level (by more than one at a time)
 - - As of 0.6.0 it will indent sensibly where possible, limiting to one at a time
 
+## [0.8.0] - 2021-06-30
+### Added
+- Section for tasks due today +/- 1 days
+- Configuration flags in script to adjust which sections are displayed.
+- Configuration flags/globals to adjust parameters of sections.
+### Changed
+- Readme changes
+- - Output sections section
+- - Extra flags returned to design intent.
+- - Minor wording changes in introduction
+- Changes in task list titles for consistency.
+
+
 ## [0.7.0] - 2021-04-21
 ### Changed
 - Put line numbers on all lines of output

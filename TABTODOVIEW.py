@@ -30,6 +30,30 @@ print("Arguments given:" , sys.argv[1:])
 print_line_numbers_main_list = True ## Prints line numbers at start of 'main' section
 print_line_numbers_overdue_list = True ## Prints line numbers at start of 'most overdue' section
 
+
+###Output listing configuration###
+flagged_list_1_flag_text = "+do"
+
+flagged_list_2_flag_text = "+inperson"
+
+due_recently_list_days_backwards = 1
+due_recently_list_days_forwards = 1
+
+over_due_top_n = 5
+
+##Comment out a line to disable that listing
+##Reorder to ... reorder.
+output_list_order = [
+    'print_flagged_list_1',
+    'print_due_recently_list',
+    'print_over_due_top_n_list',
+    ###'example_disabled_list',
+    'print_flagged_list_2',
+    'print_all_open_tasks_list'
+]
+
+
+
 ###DEBUG FLAGS###
 print_debug_indent_levels = False ##prints at start of line
 print_debug_parent_line_number = False ##prints at start of line. don't use with above.
@@ -476,6 +500,10 @@ def tabtodoview(fn_in):
     recursive_write(sorted_dict['subslist'], main_list_num_digits)
 
 
+    ##iterate over the list of output functions to give output file.
+    for list_func_name in output_list_order:
+        globals()[list_func_name]()
+
     
     f_out.close()
     print("Done!")
@@ -509,3 +537,7 @@ print("one run done")
 
     
 #exit()
+
+def print_flagged_list_1():
+    print("bob")
+    return
