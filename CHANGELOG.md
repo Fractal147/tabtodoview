@@ -22,6 +22,7 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 - - Extra flags returned to design intent.
 - - Minor wording changes in introduction
 - Changes in task list titles for consistency.
+- Refactored flagged list printing to unify
 
 
 ## [0.7.0] - 2021-04-21

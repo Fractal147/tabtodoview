@@ -26,6 +26,7 @@ print("Python Version is:", sys.version)
 print("Script name is", sys.argv[0])
 print("Arguments given:" , sys.argv[1:])
 
+
 ###CONFIGURATION###
 print_line_numbers_main_list = True ## Prints line numbers at start of 'main' section
 print_line_numbers_overdue_list = True ## Prints line numbers at start of 'most overdue' section
@@ -43,14 +44,17 @@ over_due_top_n = 5
 
 ##Comment out a line to disable that listing
 ##Reorder to ... reorder.
-output_list_order = [
-    'print_flagged_list_1',
-    'print_due_recently_list',
-    'print_over_due_top_n_list',
-    ###'example_disabled_list',
-    'print_flagged_list_2',
-    'print_all_open_tasks_list'
-]
+
+
+def print_output_lists():
+    print_flagged_list_1()
+#   print_due_recently_list()
+#    print_over_due_top_n_list()
+    ###example_disabled_list()
+#    print_flagged_list_2()
+#    print_all_open_tasks_list()
+    end_of_list_footer()
+    return
 
 
 
@@ -398,16 +402,14 @@ def tabtodoview(fn_in):
         return family_list
 
 
-    raw_dict = read_in(f_in)
-    #print(raw_list)
 
+    ######Read in the file into a dictionary:
+    raw_dict = read_in(f_in)
     #input("Read In Fully, enter to continue")
     
-    sorted_dict = recursive_sort(raw_dict) ##also probably sorts raw_dict to tbf
-    #masterDict = recursive_sort(raw_list)
+    sorted_dict = recursive_sort(raw_dict)  ##May also actually sort the raw_dict, unsure.
     #input("Sorted, enter to continue")
-    #print (sortedListOfDicts)
-    
+      
     
 
     ##Make a flat version of the text list, so no 'subslist'
@@ -500,9 +502,30 @@ def tabtodoview(fn_in):
     recursive_write(sorted_dict['subslist'], main_list_num_digits)
 
 
+    #global print_flagged_list_1
+     def print_flagged_list_1():
+        sorted_flat_list_nonotes = [i for i in sorted_flat_list if not(i.get('isnote',0) == 1)] ##removes all notes since they still can have tags, priorities, and due dates (which should be ignored)
+
+        f_out.write("*** All Flagged "+flag_do+" subtask oneliners and line numbers, in priority>date>file order:\n")
+        for d in sorted_flat_list_nonotes:
+            if not ('isdone' in d or 'iswhitespace' in d or 'isnote' in d):
+                if flag_do in d['text']:
+                    f_out.write(str(d['linenumber']).zfill(num_digits_for_line_num))
+                    f_out.write(" ")
+                    f_out.write(d['text'].lstrip("\t"))
+        f_out.write("\n\n")
+        return
+
+
+    global end_of_list_footer
+    def end_of_list_footer():
+        f_out.write("*** End of file, generated nowish")
+        return
+
+    #print_flagged_list_1()
+
     ##iterate over the list of output functions to give output file.
-    for list_func_name in output_list_order:
-        globals()[list_func_name]()
+    print_output_lists()
 
     
     f_out.close()
@@ -537,7 +560,3 @@ print("one run done")
 
     
 #exit()
-
-def print_flagged_list_1():
-    print("bob")
-    return
