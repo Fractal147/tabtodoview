@@ -57,7 +57,7 @@ becomes after sorting
 - 'x' at the start of the line (standard for done tasks) means it will not be output
 - n or 'x n' at start of line counts the task and subtasks as a note
 - - notes and their subtasks are not written out in the end file.
-- - Usage as a more correct way of adding notes to the todo list.
+- - Use as a more correct way of adding notes to the todo list.
 
 ## Output listings
 All listings are configurable in the top section of the script:
@@ -75,7 +75,6 @@ Most (over)due n tasks with parent tasks, subtask tree, and line numbers
 - Sorted by due date, then priority, then file location
 All Flagged +inperson subtask onliners and line numbers, in priority>due_date>file order
 - A convenient list for another tag, for things with mixed working from home or in office.
-
 - All open tasks, sorted by priority tag (then due date, then file order):
 - - Just a complete list of the whole file.
 

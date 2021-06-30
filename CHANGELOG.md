@@ -14,15 +14,21 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 ## [0.8.0] - 2021-06-30
 ### Added
 - Section for tasks due today +/- 1 days
-- Configuration flags in script to adjust which sections are displayed.
-- Configuration flags/globals to adjust parameters of sections.
+- Footer section with run time info.
+- Configuration section in script to adjust which lists are displayed.
+- - Also place to access and adjust parameters of sections.
+- Print line number configuration option for flagged sections
+
 ### Changed
 - Readme changes
 - - Output sections section
 - - Extra flags returned to design intent.
 - - Minor wording changes in introduction
 - Changes in task list titles for consistency.
-- Refactored flagged list printing to unify
+- Refactored list printing to unify code, and allow easy reordering
+
+### Fixed
+- Line number options now correctly change titles of sections
 
 
 ## [0.7.0] - 2021-04-21

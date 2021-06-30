@@ -22,6 +22,8 @@ import os
 from operator import itemgetter
 import re
 import math ##used for file number counting
+from datetime import datetime ##used for "today's" date feature
+from datetime import timedelta ##used for relative date
 print("Python Version is:", sys.version)
 print("Script name is", sys.argv[0])
 print("Arguments given:" , sys.argv[1:])
@@ -29,25 +31,21 @@ print("Arguments given:" , sys.argv[1:])
 
 ###CONFIGURATION###
 print_line_numbers_main_list = True ## Prints line numbers at start of 'main' section
-print_line_numbers_overdue_list = True ## Prints line numbers at start of 'most overdue' section
+print_line_numbers_datesorted_trees = True ## Prints line numbers at start of 'most overdue' and 'due near today' section
+print_line_numbers_flagged_lists = True ## Line numbers on e.g. +do and +inprogress lists
 
-
-###Output listing configuration###
-due_recently_list_days_backwards = 1
-due_recently_list_days_forwards = 1
-
-
+######Output listing configuration######
 
 ##Comment out a line to disable that listing
 ##Reorder to ... reorder.
-
-
+##Change parameters to adjust
 def print_output_lists():
     print_flagged_list("+do") ##the parameter is the flag string
-#   print_due_recently_list()
+    print_due_recently_list(1,1) # 1,1, = yesterday to tomorrow
+        # parameters are the days 'backwards' from today, and the days 'forwards' from today
     print_over_due_top_n_list(5) ##the parameter is the number of results
     ###example_disabled_list()
-    print_flagged_list("+inperson") ##the text is the flag
+    print_flagged_list("+inperson") ##the parameter is the flag string
     print_all_open_tasks_list()
     end_of_list_footer()
     return
@@ -407,8 +405,7 @@ def tabtodoview(fn_in):
     sorted_dict = recursive_sort(raw_dict)  ##May also actually sort the raw_dict, unsure.
     #input("Sorted, enter to continue")
     
-    ##Make a flat version of the text list, so no 'subslist's
-    #Which can't be easily depth traversed (printed) since it links to itself
+    ##Make a flat version of the text list, so no 'subslist's - every line is included here 
     ##but can always follow upwards easily
     ##still contains notes, whitespace, and done stuff.
     sorted_flat_list = list_children_from_parent(sorted_dict) 
@@ -427,9 +424,10 @@ def tabtodoview(fn_in):
 
 
 
-    #Write out the rest of the list to f_out
+    #####OUTPUT LIST FUNCTIONS
+    #These pull directly from the lists defined above (no problem as long as they don't modify)
+    ##New list orderings would have to go here.
     
-
 
     global print_flagged_list
     def print_flagged_list(flag_text):
@@ -438,12 +436,18 @@ def tabtodoview(fn_in):
         #TODO: #intelligent would be to display them as indented if they are subtasks, else new line
         ##Hmm, to do that needs (At least)the original dict per line - then can follow the tree up
         
-        f_out.write("*** All Flagged "+flag_text +" subtask oneliners and line numbers, in priority>due_date>file_order:\n")
+        f_out.write("*** All Flagged "+flag_text +" subtask oneliners")
+        if (print_line_numbers_flagged_lists):
+            f_out.write(" and line numbers,")
+        f_out.write(" in priority>due_date>file_order:\n")
+        
+        
         for d in sorted_flat_list_nonotes:
             if not ('isdone' in d or 'iswhitespace' in d or 'isnote' in d):
                 if flag_text  in d['text']:
-                    f_out.write(str(d['linenumber']).zfill(num_digits_for_line_num))
-                    f_out.write(" ")
+                    if(print_line_numbers_flagged_lists):
+                        f_out.write(str(d['linenumber']).zfill(num_digits_for_line_num))
+                        f_out.write(" ")
                     f_out.write(d['text'].lstrip("\t"))
         f_out.write("\n\n")
         return
@@ -460,7 +464,11 @@ def tabtodoview(fn_in):
         number_of_oldest_tasks = min(5, len(sorted_flat_list_nonotes))
         due_sorted_flat = sorted(sorted_flat_list_nonotes,  key=itemgetter('due') )#, reverse=True)
         ##conveniently, done tasks don't have due date saved here
-        f_out.write("*** Most (over)due " + str(number_of_oldest_tasks) + " tasks with parent tasks, subtask tree, and line numbers:\n")
+
+        f_out.write("*** Most (over)due " + str(number_of_oldest_tasks) + " tasks with ")
+        if(print_line_numbers_datesorted_trees): f_out.write("line numbers, ")
+        f_out.write("parent tasks, and subtask tree:\n")
+       
         for d in due_sorted_flat[:number_of_oldest_tasks]:
             #f_out.write("\t"+ d['text'].lstrip('\t') ) ##works fine for one line/task
             ##for d2 in list_elders_from_child(d): ##only lists higher tasks
@@ -470,7 +478,7 @@ def tabtodoview(fn_in):
                     #print(d2)
                     if not ('isdone' in d2 or 'iswhitespace' in d2 or 'isnote' in d2):
                         #if d2['tabCount'] == 0: #for the first line only
-                        if(print_line_numbers_overdue_list):
+                        if(print_line_numbers_datesorted_trees):
                             f_out.write(str(d2['linenumber']).zfill(num_digits_for_line_num))
                             f_out.write(" ")
                         #else:
@@ -482,26 +490,78 @@ def tabtodoview(fn_in):
 
     global print_all_open_tasks_list
     def print_all_open_tasks_list():
-
         f_out.write("*** All open tasks ")
         if(print_line_numbers_main_list):
             f_out.write("and line numbers ")
         f_out.write("in priority>due_date>file_order:\n")
+
         if(print_line_numbers_main_list):
             main_list_num_digits = num_digits_for_line_num
         else:
             main_list_num_digits = 0
+
         recursive_write(sorted_dict['subslist'], main_list_num_digits)
-        f_out.write("\n")
+
+        f_out.write("\n\n")
         return
 
 
+    global print_due_recently_list
+    def print_due_recently_list(days_back,days_forwards):
+        ##calculate due date range from today:
+        run_datetime = datetime.now()
+        time_delta_back = timedelta(days=days_back)
+        time_delta_forwards = timedelta(days=days_forwards)
 
+        min_date = (run_datetime - time_delta_back).isoformat()
+        min_date = min_date[:10] ##strip off the second half
+        #print(min_date)
+
+        max_date = (run_datetime + time_delta_forwards).isoformat()
+        max_date = max_date[:10] ##strip off the second half
+        #print(max_date)
+
+        
+        due_sorted_flat = sorted(sorted_flat_list_nonotes,  key=itemgetter('due') )
+
+        ##strip out ones where due date doesn't match or no due date
+        ##Probably more performant ways to do this, given it's sorted
+        due_sorted_flat_daterange = [
+        i for i in due_sorted_flat if (  (i.get('due',"ZZZ") >=min_date) and (i.get('due',"ZZZ") <= max_date))
+        ]
+        
+        
+        f_out.write("*** Tasks due from " +min_date+ " to " + max_date + ", with ")
+        if(print_line_numbers_datesorted_trees): 
+            f_out.write("line numbers, ")
+        f_out.write("parent tasks, and subtask tree:\n")
+        for d in due_sorted_flat_daterange:
+            #f_out.write("\t"+ d['text'].lstrip('\t') ) ##works fine for one line/task
+            ##for d2 in list_elders_from_child(d): ##only lists higher tasks
+            
+            for d2 in list_all_family_from_child(d):
+                if not ('isdone' in d2 or 'iswhitespace' in d2 or 'isnote' in d2):
+                    #if d2['tabCount'] == 0: #for the first line only
+                    if(print_line_numbers_datesorted_trees):
+                        f_out.write(str(d2['linenumber']).zfill(num_digits_for_line_num))
+                        f_out.write(" ")
+                    #else:
+                    #f_out.write("\t")
+                    f_out.write(d2['text'])
+            f_out.write("\n")
+        f_out.write("\n")
+
+        return
 
     global end_of_list_footer
     def end_of_list_footer():
-        f_out.write("*** End of file, generated nowish")
+
+        f_out.write("*** End of file, generated on " + datetime.now().isoformat())
+
         return
+
+
+
 
     #print_flagged_list_1()
 
