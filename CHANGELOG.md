@@ -11,6 +11,19 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 - Warn if there's impossible jumping down in indent level (by more than one at a time)
 - - As of 0.6.0 it will indent sensibly where possible, limiting to one at a time
 
+## [0.8.1] - 2021-07-01
+### Added
+- Added logic to skip weekends in counting of days in print_due_recently_list
+### Changed
+- Made parameters clearer in print_outputs_list
+- Rearranged output functions
+- Rearranged all functions to be same level, for clearer code
+### Fixed
+- Fixed many functions operating out of scope (when scoped correctly)
+### Cleaned
+- Rearranged and removed some old comments
+- removed semicolons
+
 ## [0.8.0] - 2021-06-30
 ### Added
 - Section for tasks due today +/- 1 days

@@ -69,7 +69,8 @@ All Flagged +do subtask oneliners and line numbers, in priority>due_date>file or
  - (e.g. add +do to the tasks you want to do this hour/day/sprint)
 All tasks due from yesterday to tomorrow with parent tasks, and subtask tree
 - A list of those tasks due within certain days (inclusive) of the script running
-- Output will include real dates.
+- Output will include real dates defined - can be extended.
+- Option to skip weekends in the day counting (so that 'one day forward from friday' gives the monday)
 Most (over)due n tasks with parent tasks, subtask tree, and line numbers
 - A listing with context of the most overdue 5 tasks
 - Sorted by due date, then priority, then file location
@@ -79,7 +80,8 @@ All Flagged +inperson subtask onliners and line numbers, in priority>due_date>fi
 - - Just a complete list of the whole file.
 
 ## Usage
- - Run tabtodoview with the text file input, and it generates the view file under [inputname]_ttv
+- Adjust configuration options at the top of the tabtodoview.py script or accept defaults
+- Run tabtodoview with the text file input, and it generates the view file under [inputname]_ttv
 
 ### Command line:
 
