@@ -7,9 +7,10 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 ## [Unreleased]
 - Further options for selecting indent character
 - Helpful parsing error output in separate file
-- Possibly add settings section for number of lines in the most due/ +do tag....
 - Warn if there's impossible jumping down in indent level (by more than one at a time)
 - - As of 0.6.0 it will indent sensibly where possible, limiting to one at a time
+## Known Bugs
+- +do will include +doabc, as it needs to handle EOL or whitespace next (or alternately, not anything else)
 
 ## [0.8.1] - 2021-07-01
 ### Added
