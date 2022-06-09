@@ -1,7 +1,7 @@
 <NotepadPlus>
-    <UserLang name="todo.txt" ext="Todo.txt" udlVersion="2.1">
+    <UserLang name="todo.txt" ext="todo.txt" udlVersion="2.1">
         <Settings>
-            <Global caseIgnored="yes" allowFoldOfComments="yes" foldCompact="no" forcePureLC="2" decimalSeparator="0" />
+            <Global caseIgnored="no" allowFoldOfComments="no" foldCompact="no" forcePureLC="2" decimalSeparator="0" />
             <Prefix Keywords1="yes" Keywords2="yes" Keywords3="no" Keywords4="yes" Keywords5="no" Keywords6="no" Keywords7="no" Keywords8="no" />
         </Settings>
         <KeywordLists>
@@ -13,26 +13,26 @@
             <Keywords name="Numbers, suffix1">-</Keywords>
             <Keywords name="Numbers, suffix2"></Keywords>
             <Keywords name="Numbers, range">-</Keywords>
-            <Keywords name="Operators1">(I) (J) (K) (L) (M) (N) (O) (P) (Q) (R) (S) (T) (U) (V) (W) (X) (Y) (Z)</Keywords>
-            <Keywords name="Operators2"></Keywords>
-            <Keywords name="Folders in code1, open"></Keywords>
+            <Keywords name="Operators1"></Keywords>
+            <Keywords name="Operators2">(I) (J) (K) (L) (M) (N) (O) (P) (Q) (R) (S) (T) (U) (V) (W) (X) (Y) (Z)</Keywords>
+            <Keywords name="Folders in code1, open">{</Keywords>
             <Keywords name="Folders in code1, middle"></Keywords>
-            <Keywords name="Folders in code1, close"></Keywords>
+            <Keywords name="Folders in code1, close">}</Keywords>
             <Keywords name="Folders in code2, open"></Keywords>
             <Keywords name="Folders in code2, middle"></Keywords>
             <Keywords name="Folders in code2, close"></Keywords>
-            <Keywords name="Folders in comment, open"></Keywords>
+            <Keywords name="Folders in comment, open">{</Keywords>
             <Keywords name="Folders in comment, middle"></Keywords>
-            <Keywords name="Folders in comment, close"></Keywords>
+            <Keywords name="Folders in comment, close">}</Keywords>
             <Keywords name="Keywords1">+</Keywords>
             <Keywords name="Keywords2">@</Keywords>
             <Keywords name="Keywords3">WAIT</Keywords>
-            <Keywords name="Keywords4">DUE:</Keywords>
+            <Keywords name="Keywords4">DUE: due:</Keywords>
             <Keywords name="Keywords5">n</Keywords>
             <Keywords name="Keywords6"></Keywords>
             <Keywords name="Keywords7"></Keywords>
             <Keywords name="Keywords8"></Keywords>
-            <Keywords name="Delimiters">00(((A) (B))) 01 02((EOL)) 03(((C) (D))) 04 05((EOL)) 06(((E) (F))) 07 08((EOL)) 09(((G) (H))) 10 11((EOL)) 12*** 13 14((EOL)) 15 16 17 18 19 20 21 22 23</Keywords>
+            <Keywords name="Delimiters">00(( (A (B )) 01 02) 02) 03(( (C (D )) 04 05) 05) 06(( (E (F )) 07 08) 08) 09(( (G (H )) 10 11) 11) 12*** 13 14((EOL)) 15 16 17 18 19 20 21 22 23</Keywords>
         </KeywordLists>
         <Styles>
             <WordsStyle name="DEFAULT" fgColor="657B83" bgColor="FDF6E3" colorStyle="0" fontStyle="0" nesting="0" />
@@ -51,8 +51,8 @@
             <WordsStyle name="FOLDER IN CODE1" fgColor="000000" bgColor="FDF6E3" fontStyle="0" nesting="0" />
             <WordsStyle name="FOLDER IN CODE2" fgColor="000000" bgColor="FDF6E3" fontStyle="0" nesting="0" />
             <WordsStyle name="FOLDER IN COMMENT" fgColor="000000" bgColor="FDF6E3" fontStyle="0" nesting="0" />
-            <WordsStyle name="DELIMITERS1" fgColor="DC322F" bgColor="FFFFFF" fontStyle="0" nesting="67124240" />
-            <WordsStyle name="DELIMITERS2" fgColor="CB4B16" bgColor="FFFFFF" fontStyle="0" nesting="67116048" />
+            <WordsStyle name="DELIMITERS1" fgColor="DC322F" bgColor="FFFFFF" fontStyle="1" nesting="67124240" />
+            <WordsStyle name="DELIMITERS2" fgColor="CB4B16" bgColor="FFFFFF" fontStyle="1" nesting="67116048" />
             <WordsStyle name="DELIMITERS3" fgColor="B58900" bgColor="FFFFFF" fontStyle="0" nesting="67116048" />
             <WordsStyle name="DELIMITERS4" fgColor="859900" bgColor="FFFFFF" fontStyle="0" nesting="67116048" />
             <WordsStyle name="DELIMITERS5" fgColor="800000" bgColor="C0C0C0" fontStyle="1" nesting="0" />
