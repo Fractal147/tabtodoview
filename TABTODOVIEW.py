@@ -46,7 +46,11 @@ print_debug_parent_line_number = False ##prints at start of line. don't use with
 
 
 def tabtodoview(fn_in):
-    f_in = open(fn_in, 'rt')
+    f_in = open(fn_in, 'rt',encoding="utf-8") 
+    #The encoding can be done wrong, e.g. this snippet gives cp1252 in some cases
+        #f_in = open(fn_in, 'rt')
+        #print(f_in.encoding)
+
     global f_out
     f_out = open(fn_in+'_ttv', 'wt') ##overwrite mode?
 
