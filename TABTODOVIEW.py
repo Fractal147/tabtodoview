@@ -52,7 +52,7 @@ def tabtodoview(fn_in):
         #print(f_in.encoding)
 
     global f_out
-    f_out = open(fn_in+'_ttv', 'wt') ##overwrite mode?
+    f_out = open(fn_in+'_ttv', 'wt', encoding="utf-8") ##overwrite mode?
 
 
     ######Read in the file into a dictionary:################
@@ -159,11 +159,11 @@ def parse_line(inputLine, linenum):
     #0123456789
     
     #search for note tag at the start of line.
-    if re.search('^n\ |^x\ n\ ', workingLine):
+    if re.search(r'^n\ |^x\ n\ ', workingLine):
         ##This line is a note, and it's children are too.
         outputDict['isnote']=1
     
-    if  re.search('^x\ ', workingLine):
+    if  re.search(r'^x\ ', workingLine):
         #print(str(linenum) + inputLine + " Is WS")
         outputDict['isdone'] =1
         ##flag priority of task as lowest of the low...skipped for v3
@@ -171,11 +171,11 @@ def parse_line(inputLine, linenum):
 
     if not ('isdone' in outputDict or 'isnote' in outputDict):
     ## done or note items can't have a high priority or due
-        if  re.search('\(\w\)', workingLine):
+        if  re.search(r'\(\w\)', workingLine):
             prioLetter = workingLine[workingLine.find("(")+1]
             outputDict['prio'] = prioLetter
             #print(str(linenum) + inputLine + " has prio " + prioLetter)
-        if re.search('\ due:\d{4}-\d{2}-\d{2}', workingLine):
+        if re.search(r'\ due:\d{4}-\d{2}-\d{2}', workingLine):
             indexOfDate = workingLine.find(" due:")+5
             dueDate = workingLine[indexOfDate:indexOfDate+10]
             outputDict['due'] = dueDate
